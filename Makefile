@@ -18,7 +18,8 @@ dl: SDL2-2.0.14.zip \
 	libvorbis-1.3.7.tar.gz \
 	libtheora-1.1.1.tar.bz2 \
 	openal-soft-1.21.0.tar.bz2 \
-	freetype-2.10.4.tar.gz
+	freetype-2.10.4.tar.gz \
+	luajit2.uguu
 
 SDL2.framework: SDL2-2.0.14
 	pushd SDL2-2.0.14/Xcode/SDL && \
@@ -182,7 +183,39 @@ freetype-2.10.4: freetype-2.10.4.tar.gz
 freetype-2.10.4.tar.gz:
 	wget https://jaist.dl.sourceforge.net/project/freetype/freetype2/2.10.4/freetype-2.10.4.tar.gz
 
-Lua.framework:
+Lua.framework: luajit2
+	pushd luajit2/src && \
+	MACOSX_DEPLOYMENT_TARGET=10.9 make libluajit.so && \
+	gcc -dynamiclib -single_module -undefined dynamic_lookup -fPIC \
+		-install_name @rpath/Lua.framework/Versions/A/Lua \
+		-compatibility_version 2.1 -current_version 2.1.0 \
+		-o Lua lj_vm.o lj_gc.o lj_err.o lj_char.o lj_bc.o \
+		lj_obj.o lj_buf.o lj_str.o lj_tab.o lj_func.o lj_udata.o \
+		lj_meta.o lj_debug.o lj_state.o lj_dispatch.o lj_vmevent.o \
+		lj_vmmath.o lj_strscan.o lj_strfmt.o lj_strfmt_num.o lj_api.o \
+		lj_profile.o lj_lex.o lj_parse.o lj_bcread.o lj_bcwrite.o \
+		lj_load.o lj_ir.o lj_opt_mem.o lj_opt_fold.o lj_opt_narrow.o \
+		lj_opt_dce.o lj_opt_loop.o lj_opt_split.o lj_opt_sink.o \
+		lj_mcode.o lj_snap.o lj_record.o lj_crecord.o lj_ffrecord.o \
+		lj_asm.o lj_trace.o lj_gdbjit.o lj_ctype.o lj_cdata.o \
+		lj_cconv.o lj_ccall.o lj_ccallback.o lj_carith.o lj_clib.o \
+		lj_cparse.o lj_lib.o lj_alloc.o lib_aux.o lib_base.o \
+		lib_math.o lib_bit.o lib_string.o lib_table.o lib_io.o \
+		lib_os.o lib_package.o lib_debug.o lib_jit.o lib_ffi.o lib_init.o -lm && \
+	../../make_framework.sh Lua 2.1.0-beta3 org.luajit && \
+	cp luaconf.h Lua.framework/Headers && \
+	cp lua.hpp Lua.framework/Headers && \
+	cp lualib.h Lua.framework/Headers && \
+	cp luajit.h Lua.framework/Headers && \
+	cp lua.h Lua.framework/Headers && \
+	popd && \
+	mv luajit2/src/Lua.framework .
+
+luajit2: luajit2.uguu
+	cp -r luajit2.uguu luajit2
+
+luajit2.uguu:
+	git clone https://github.com/openresty/luajit2.git luajit2.uguu
 
 .PHONY: clean-local
 
@@ -197,6 +230,7 @@ clean-local:
 		Theora.framework \
 		OpenAL-Soft.framework \
 		FreeType.framework \
+		Lua.framework \
 		SDL2-2.0.14 \
 		physfs-3.0.2 \
 		mpg123-1.26.4 \
@@ -205,7 +239,8 @@ clean-local:
 		libvorbis-1.3.7 \
 		libtheora-1.1.1 \
 		openal-soft-1.21.0 \
-		freetype-2.10.4
+		freetype-2.10.4 \
+		luajit2
 
 .PHONY: clean
 
@@ -218,7 +253,8 @@ clean: clean-local
 		libvorbis-1.3.7.tar.gz \
 		libtheora-1.1.1.tar.bz2 \
 		openal-soft-1.21.0.tar.bz2 \
-		freetype-2.10.4.tar.gz
+		freetype-2.10.4.tar.gz \
+		luajit2.uguu
 
 .PHONY: install-deps
 
