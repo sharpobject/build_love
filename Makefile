@@ -163,7 +163,23 @@ openal-soft-1.21.0: openal-soft-1.21.0.tar.bz2
 openal-soft-1.21.0.tar.bz2:
 	wget https://www.openal-soft.org/openal-releases/openal-soft-1.21.0.tar.bz2
 
-FreeType.framework:
+FreeType.framework: freetype-2.10.4
+	pushd freetype-2.10.4 && \
+	./configure && \
+	make && \
+	cp ./objs/.libs/libfreetype.6.dylib ./FreeType && \
+	../make_framework.sh FreeType 2.10.4 org.freetype && \
+	cp ./include/ft2build.h FreeType.framework/Versions/A/Headers/ft2build.h && \
+	popd && \
+	cp ./freetype-2.10.4/include/freetype/*.h freetype-2.10.4/FreeType.framework/Versions/A/Headers && \
+	cp -r ./freetype-2.10.4/include/freetype/config freetype-2.10.4/FreeType.framework/Versions/A/Headers && \
+	mv freetype-2.10.4/FreeType.framework .
+
+freetype-2.10.4: freetype-2.10.4.tar.gz
+	tar xzf freetype-2.10.4.tar.gz
+
+freetype-2.10.4.tar.gz:
+	wget https://jaist.dl.sourceforge.net/project/freetype/freetype2/2.10.4/freetype-2.10.4.tar.gz
 
 Lua.framework:
 
@@ -179,6 +195,7 @@ clean-local:
 		Vorbis.framework \
 		Theora.framework \
 		OpenAL-Soft.framework \
+		FreeType.framework \
 		SDL2-2.0.14 \
 		physfs-3.0.2 \
 		mpg123-1.26.4 \
@@ -186,7 +203,8 @@ clean-local:
 		libogg-1.3.4 \
 		libvorbis-1.3.7 \
 		libtheora-1.1.1 \
-		openal-soft-1.21.0
+		openal-soft-1.21.0 \
+		freetype-2.10.4
 
 .PHONY: clean
 
@@ -198,7 +216,8 @@ clean: clean-local
 		libogg-1.3.4.tar.gz \
 		libvorbis-1.3.7.tar.gz \
 		libtheora-1.1.1.tar.bz2 \
-		openal-soft-1.21.0.tar.bz2
+		openal-soft-1.21.0.tar.bz2 \
+		freetype-2.10.4.tar.gz
 
 .PHONY: install-deps
 
