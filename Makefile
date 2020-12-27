@@ -17,7 +17,8 @@ dl: SDL2-2.0.14.zip \
 	libogg-1.3.4.tar.gz \
 	libvorbis-1.3.7.tar.gz \
 	libtheora-1.1.1.tar.bz2 \
-	openal-soft-1.21.0.tar.bz2
+	openal-soft-1.21.0.tar.bz2 \
+	freetype-2.10.4.tar.gz
 
 SDL2.framework: SDL2-2.0.14
 	pushd SDL2-2.0.14/Xcode/SDL && \
