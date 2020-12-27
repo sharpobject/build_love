@@ -16,7 +16,8 @@ dl: SDL2-2.0.14.zip \
 	libmodplug-0.8.9.0.tar.gz \
 	libogg-1.3.4.tar.gz \
 	libvorbis-1.3.7.tar.gz \
-	libtheora-1.1.1.tar.bz2
+	libtheora-1.1.1.tar.bz2 \
+	openal-soft-1.21.0.tar.bz2
 
 SDL2.framework: SDL2-2.0.14
 	pushd SDL2-2.0.14/Xcode/SDL && \
@@ -140,6 +141,21 @@ libtheora-1.1.1.tar.bz2:
 	wget https://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.bz2
 
 OpenAL-Soft.framework: openal-soft-1.21.0
+	pushd openal-soft-1.21.0 && \
+	cmake -G Xcode && \
+	xcodebuild -target OpenAL \
+		-configuration Release -scheme OpenAL \
+		SYMROOT="." && \
+	cp Release/libopenal.1.21.0.dylib ./OpenAL-Soft && \
+	../make_framework.sh OpenAL-Soft 1.21.0 org.openal && \
+	cp ./include/AL/al.h OpenAL-Soft.framework/Versions/A/Headers/al.h && \
+	cp ./include/AL/alc.h OpenAL-Soft.framework/Versions/A/Headers/alc.h && \
+	cp ./include/AL/alext.h OpenAL-Soft.framework/Versions/A/Headers/alext.h && \
+	cp ./include/AL/efx.h OpenAL-Soft.framework/Versions/A/Headers/efx.h && \
+	cp ./include/AL/efx-creative.h OpenAL-Soft.framework/Versions/A/Headers/efx-creative.h && \
+	cp ./include/AL/efx-presets.h OpenAL-Soft.framework/Versions/A/Headers/efx-presets.h && \
+	popd && \
+	mv openal-soft-1.21.0/OpenAL-Soft.framework .
 
 openal-soft-1.21.0: openal-soft-1.21.0.tar.bz2
 	tar xzf openal-soft-1.21.0.tar.bz2
