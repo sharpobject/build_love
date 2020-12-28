@@ -80,6 +80,7 @@ libmodplug.framework: libmodplug-0.8.9.0
 	cp ./src/.libs/libmodplug.1.dylib libmodplug && \
 	../make_framework.sh libmodplug 0.8.9.0 org.libmodplug && \
 	cp ./src/modplug.h libmodplug.framework/Versions/A/Headers/modplug.h && \
+	install_name_tool -id "@rpath/libmodplug.framework/Versions/A/libmodplug" libmodplug.framework/libmodplug && \
 	popd && \
 	mv libmodplug-0.8.9.0/libmodplug.framework .
 
@@ -133,6 +134,8 @@ Theora.framework: libtheora-1.1.1
 	cp ./include/theora/theora.h Theora.framework/Versions/A/Headers/theora.h && \
 	cp ./include/theora/theoradec.h Theora.framework/Versions/A/Headers/theoradec.h && \
 	cp ./include/theora/theoraenc.h Theora.framework/Versions/A/Headers/theoraenc.h && \
+	install_name_tool -id "@rpath/Theora.framework/Versions/A/Theora" Theora.framework/Theora && \
+	install_name_tool -change "/opt/homebrew/opt/libogg/lib/libogg.0.dylib" "@rpath/Ogg.framework/Ogg" Theora.framework/Theora && \
 	popd && \
 	mv libtheora-1.1.1/Theora.framework .
 
@@ -156,6 +159,7 @@ OpenAL-Soft.framework: openal-soft-1.21.0
 	cp ./include/AL/efx.h OpenAL-Soft.framework/Versions/A/Headers/efx.h && \
 	cp ./include/AL/efx-creative.h OpenAL-Soft.framework/Versions/A/Headers/efx-creative.h && \
 	cp ./include/AL/efx-presets.h OpenAL-Soft.framework/Versions/A/Headers/efx-presets.h && \
+	install_name_tool -id "@rpath/OpenAL-Soft.framework/Versions/A/OpenAL-Soft" OpenAL-Soft.framework/OpenAL-Soft && \
 	popd && \
 	mv openal-soft-1.21.0/OpenAL-Soft.framework .
 
@@ -172,6 +176,7 @@ FreeType.framework: freetype-2.10.4
 	cp ./objs/.libs/libfreetype.6.dylib ./FreeType && \
 	../make_framework.sh FreeType 2.10.4 org.freetype && \
 	cp ./include/ft2build.h FreeType.framework/Versions/A/Headers/ft2build.h && \
+	install_name_tool -id "@rpath/FreeType.framework/Versions/A/FreeType" FreeType.framework/FreeType && \
 	popd && \
 	cp ./freetype-2.10.4/include/freetype/*.h freetype-2.10.4/FreeType.framework/Versions/A/Headers && \
 	cp -r ./freetype-2.10.4/include/freetype/config freetype-2.10.4/FreeType.framework/Versions/A/Headers && \
@@ -199,6 +204,7 @@ Lua.framework: luajit2
 		lj_mcode.o lj_snap.o lj_record.o lj_crecord.o lj_ffrecord.o \
 		lj_asm.o lj_trace.o lj_gdbjit.o lj_ctype.o lj_cdata.o \
 		lj_cconv.o lj_ccall.o lj_ccallback.o lj_carith.o lj_clib.o \
+		lj_prng.o \
 		lj_cparse.o lj_lib.o lj_alloc.o lib_aux.o lib_base.o \
 		lib_math.o lib_bit.o lib_string.o lib_table.o lib_io.o \
 		lib_os.o lib_package.o lib_debug.o lib_jit.o lib_ffi.o lib_init.o -lm && \
@@ -208,6 +214,7 @@ Lua.framework: luajit2
 	cp lualib.h Lua.framework/Headers && \
 	cp luajit.h Lua.framework/Headers && \
 	cp lua.h Lua.framework/Headers && \
+	cp lauxlib.h Lua.framework/Headers && \
 	popd && \
 	mv luajit2/src/Lua.framework .
 
