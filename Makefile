@@ -67,6 +67,7 @@ mpg123.framework: mpg123-1.26.4
 	../make_framework.sh mpg123 1.26.4 org.mpg123 && \
 	cp ./src/libmpg123/mpg123.h mpg123.framework/Versions/A/Headers/mpg123.h && \
 	cp ./src/libmpg123/fmt123.h mpg123.framework/Versions/A/Headers/fmt123.h && \
+	install_name_tool -id "@rpath/mpg123.framework/mpg123" mpg123.framework/mpg123 && \
 	popd && \
 	mv mpg123-1.26.4/mpg123.framework .
 
