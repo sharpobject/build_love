@@ -1,3 +1,5 @@
+CURRENT_DIR = $(shell pwd)
+
 all: dl \
 	SDL2.framework \
 	physfs.framework \
@@ -64,6 +66,7 @@ mpg123.framework: mpg123-1.26.4
 	cp ./src/libmpg123/.libs/libmpg123.0.dylib ./mpg123 && \
 	../make_framework.sh mpg123 1.26.4 org.mpg123 && \
 	cp ./src/libmpg123/mpg123.h mpg123.framework/Versions/A/Headers/mpg123.h && \
+	cp ./src/libmpg123/fmt123.h mpg123.framework/Versions/A/Headers/fmt123.h && \
 	popd && \
 	mv mpg123-1.26.4/mpg123.framework .
 
@@ -80,7 +83,7 @@ libmodplug.framework: libmodplug-0.8.9.0
 	cp ./src/.libs/libmodplug.1.dylib libmodplug && \
 	../make_framework.sh libmodplug 0.8.9.0 org.libmodplug && \
 	cp ./src/modplug.h libmodplug.framework/Versions/A/Headers/modplug.h && \
-	install_name_tool -id "@rpath/libmodplug.framework/Versions/A/libmodplug" libmodplug.framework/libmodplug && \
+	install_name_tool -id "@rpath/libmodplug.framework/libmodplug" libmodplug.framework/libmodplug && \
 	popd && \
 	mv libmodplug-0.8.9.0/libmodplug.framework .
 
@@ -124,17 +127,19 @@ libvorbis-1.3.7: libvorbis-1.3.7.tar.gz
 libvorbis-1.3.7.tar.gz:
 	wget https://downloads.xiph.org/releases/vorbis/libvorbis-1.3.7.tar.gz
 
-Theora.framework: libtheora-1.1.1
+Theora.framework: libtheora-1.1.1 Ogg.framework
 	pushd libtheora-1.1.1 && \
-	./configure && \
-	make && \
+	ln -s ../Ogg.framework/Headers ogg && \
+	cp ../Ogg.framework/Ogg libogg.dylib && \
+	./configure CPPFLAGS="-I$(CURRENT_DIR)/libtheora-1.1.1" LDFLAGS='-L/$(CURRENT_DIR)/libtheora-1.1.1' && \
+	make CFLAGS="-Dpng_sizeof=sizeof" && \
 	cp ./lib/.libs/libtheora.0.dylib ./Theora && \
 	../make_framework.sh Theora 1.1.1 org.theora && \
 	cp ./include/theora/codec.h Theora.framework/Versions/A/Headers/codec.h && \
 	cp ./include/theora/theora.h Theora.framework/Versions/A/Headers/theora.h && \
 	cp ./include/theora/theoradec.h Theora.framework/Versions/A/Headers/theoradec.h && \
 	cp ./include/theora/theoraenc.h Theora.framework/Versions/A/Headers/theoraenc.h && \
-	install_name_tool -id "@rpath/Theora.framework/Versions/A/Theora" Theora.framework/Theora && \
+	install_name_tool -id "@rpath/Theora.framework/Theora" Theora.framework/Theora && \
 	install_name_tool -change "/opt/homebrew/opt/libogg/lib/libogg.0.dylib" "@rpath/Ogg.framework/Ogg" Theora.framework/Theora && \
 	popd && \
 	mv libtheora-1.1.1/Theora.framework .
@@ -159,7 +164,7 @@ OpenAL-Soft.framework: openal-soft-1.21.0
 	cp ./include/AL/efx.h OpenAL-Soft.framework/Versions/A/Headers/efx.h && \
 	cp ./include/AL/efx-creative.h OpenAL-Soft.framework/Versions/A/Headers/efx-creative.h && \
 	cp ./include/AL/efx-presets.h OpenAL-Soft.framework/Versions/A/Headers/efx-presets.h && \
-	install_name_tool -id "@rpath/OpenAL-Soft.framework/Versions/A/OpenAL-Soft" OpenAL-Soft.framework/OpenAL-Soft && \
+	install_name_tool -id "@rpath/OpenAL-Soft.framework/OpenAL-Soft" OpenAL-Soft.framework/OpenAL-Soft && \
 	popd && \
 	mv openal-soft-1.21.0/OpenAL-Soft.framework .
 
@@ -176,7 +181,7 @@ FreeType.framework: freetype-2.10.4
 	cp ./objs/.libs/libfreetype.6.dylib ./FreeType && \
 	../make_framework.sh FreeType 2.10.4 org.freetype && \
 	cp ./include/ft2build.h FreeType.framework/Versions/A/Headers/ft2build.h && \
-	install_name_tool -id "@rpath/FreeType.framework/Versions/A/FreeType" FreeType.framework/FreeType && \
+	install_name_tool -id "@rpath/FreeType.framework/FreeType" FreeType.framework/FreeType && \
 	popd && \
 	cp ./freetype-2.10.4/include/freetype/*.h freetype-2.10.4/FreeType.framework/Versions/A/Headers && \
 	cp -r ./freetype-2.10.4/include/freetype/config freetype-2.10.4/FreeType.framework/Versions/A/Headers && \
@@ -266,4 +271,4 @@ clean: clean-local
 .PHONY: install-deps
 
 install-deps:
-	brew install wget cmake libtool autoconf make automake libogg
+	brew install wget make
